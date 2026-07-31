@@ -12,13 +12,15 @@ echo "======================================================================"
 echo "          REPLICA 44 - INSTALLATEUR UNIVERSEL ONE-LINER               "
 echo "======================================================================"
 
+INSTALL_DIR="${INSTALL_DIR:-${HOME}/replica44-infra}"
+
 if [ -f "./bootstrap.sh" ]; then
     INSTALL_DIR="$(pwd)"
 elif [ -d "${INSTALL_DIR}" ]; then
     echo "[+] Dépôt existant détecté dans ${INSTALL_DIR}."
 else
     echo "[+] Initialisation du projet Replica 44 dans ${INSTALL_DIR}..."
-    git clone https://github.com/guomangu/replica44.git "${INSTALL_DIR}" 2>/dev/null || true
+    git clone https://github.com/guomangu/replica44.git "${INSTALL_DIR}"
 fi
 
 cd "${INSTALL_DIR}"
