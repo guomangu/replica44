@@ -20,11 +20,19 @@ if [ ! -f "${ENV_FILE}" ]; then
     BASE_PORT=$("${SCRIPT_DIR}/setup/find_free_port_block.sh")
     echo "[+] Tranche réservée avec succès ! Port de base : ${BASE_PORT}"
 
+    # Vérification d'unicité stricte du dossier de données utilisateur (~/replica44-data-PORT)
+    DATA_PATH="${HOME}/replica44-data-${BASE_PORT}"
+    COUNTER=1
+    while [ -d "${DATA_PATH}" ] && [ -f "${DATA_PATH}/config/gateway/nginx.conf" ]; do
+        DATA_PATH="${HOME}/replica44-data-${BASE_PORT}-${COUNTER}"
+        COUNTER=$(( COUNTER + 1 ))
+    done
+
     cp "${ENV_EXAMPLE}" "${ENV_FILE}"
     sed -i "s|^BASE_PORT=.*|BASE_PORT=${BASE_PORT}|" "${ENV_FILE}"
     sed -i "s|^REPLICA44_INSTANCE_ID=.*|REPLICA44_INSTANCE_ID=${BASE_PORT}|" "${ENV_FILE}"
-    sed -i "s|^REPLICA44_DATA_DIR=.*|REPLICA44_DATA_DIR=\${HOME}/replica44-data-${BASE_PORT}|" "${ENV_FILE}"
-    sed -i "s|^REPLICA44_MEDIA_DIR=.*|REPLICA44_MEDIA_DIR=\${HOME}/replica44-data-${BASE_PORT}/torrents|" "${ENV_FILE}"
+    sed -i "s|^REPLICA44_DATA_DIR=.*|REPLICA44_DATA_DIR=${DATA_PATH}|" "${ENV_FILE}"
+    sed -i "s|^REPLICA44_MEDIA_DIR=.*|REPLICA44_MEDIA_DIR=${DATA_PATH}/torrents|" "${ENV_FILE}"
     sed -i "s|^GATEWAY_PORT=.*|GATEWAY_PORT=$(( BASE_PORT + 0 ))|" "${ENV_FILE}"
     sed -i "s|^JELLYFIN_PORT=.*|JELLYFIN_PORT=$(( BASE_PORT + 1 ))|" "${ENV_FILE}"
     sed -i "s|^TRANSMISSION_PORT=.*|TRANSMISSION_PORT=$(( BASE_PORT + 2 ))|" "${ENV_FILE}"
