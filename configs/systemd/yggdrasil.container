@@ -1,0 +1,14 @@
+# Container Quadlet: Yggdrasil
+# Bouclier réseau maillé chiffré P2P (Phase 3)
+
+[Container]
+ContainerName=replica44-yggdrasil-${REPLICA44_INSTANCE_ID}
+Image=docker.io/cofob/yggdrasil:latest
+Pod=replica44-pod-${REPLICA44_INSTANCE_ID}.pod
+
+AddCapability=CAP_NET_ADMIN
+SecurityLabelDisable=true
+AddDevice=/dev/net/tun
+
+[Install]
+WantedBy=default.target

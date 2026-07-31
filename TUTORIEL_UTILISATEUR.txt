@@ -1,0 +1,114 @@
+==============================================================================
+                    REPLICA 44 - GUIDE UTILISATEUR ET TUTORIEL
+==============================================================================
+
+Bienvenue dans Replica 44 ! Ce projet a été conçu pour vous offrir un serveur
+multimédia et de téléchargement privé, sécurisé, clé-en-main et décentralisé.
+
+------------------------------------------------------------------------------
+1. COMMENT FONCTIONNE REPLICA 44 ? (EXPLICATION SIMPLE)
+------------------------------------------------------------------------------
+
+Imaginez Replica 44 comme une boîte virtuelle sécurisée (un "Pod") installée sur
+votre serveur VPS ou votre ordinateur. À l'intérieur se trouvent 5 conteneurs
+qui travaillent ensemble de manière totalement autonome :
+
+1. Gateway Reverse Proxy (Nginx) : Le point d'entrée HTTPS unique et chiffré.
+2. Transmission : Votre moteur de téléchargement P2P opéré "As a File".
+3. Jellyfin : Votre cinéma privé pour streamer vos vidéos et séries.
+4. Open VS Code Server : Votre centre de contrôle accessible depuis votre navigateur.
+5. Yggdrasil : Le réseau mesh chiffré décentralisé pour connecter vos serveurs.
+
+Tout se contrôle de manière ultra-simple : vous déposez un fichier .torrent,
+Replica 44 s'occupe de tout le reste !
+
+
+------------------------------------------------------------------------------
+2. COMMENT DÉMARRER ET UTILISER VOTRE SERVEUR ?
+------------------------------------------------------------------------------
+
+MÉTHODE A : Installation One-Liner sur un VPS Vierge (La plus simple)
+---------------------------------------------------------------------
+Exécutez cette ligne unique dans votre terminal VPS :
+
+  curl -fsSL https://raw.githubusercontent.com/replica44/replica44-infra/main/install.sh | bash
+
+
+MÉTHODE B : Installation Manuelle
+---------------------------------
+1. Amorcer votre serveur :
+     ./bootstrap.sh
+
+   (Trouve automatiquement 10 ports libres dès 4000, génère vos mots de passe
+    sécurisés dans .env et crée vos certificats de chiffrement SSL HTTPS).
+
+2. Déployer et Démarrer les services :
+     ./scripts/deploy_quadlets.sh
+     systemctl --user start replica44-pod-4000-pod   (ou votre numéro de port)
+
+
+------------------------------------------------------------------------------
+3. ACCÉDER À VOS SERVICES (PAGE D'ACCUEIL UNIQUE)
+------------------------------------------------------------------------------
+
+Ouvrez simplement votre navigateur sur l'adresse unique chiffrée HTTPS :
+
+  👉 https://localhost:4000/   (ou https://IP_DE_VOTRE_VPS:4000/)
+
+Depuis cette page d'accueil (Dashboard Gateway), vous accédez en un clic à :
+- 🎬 Jellyfin : Vos médias prêts à être diffusés.
+- ⚡ Transmission : Suivi de vos téléchargements et partages P2P (Mot de passe dans .env).
+- 🛠️ Open VS Code : L'éditeur de code pour gérer votre serveur (Mot de passe dans .env).
+- 🔗 Synchronisation 1-Clic : Déverrouillez le formulaire avec le mot de passe Gateway pour synchroniser automatiquement un VPS via son adresse IPv6 Yggdrasil.
+
+
+------------------------------------------------------------------------------
+4. COMMENT TÉLÉCHARGER ET REGARDER UN FILM ? ("AS A FILE")
+------------------------------------------------------------------------------
+
+1. Téléchargement :
+   Déposez simplement votre fichier `.torrent` dans le dossier :
+   `~/replica44-data-4000/torrents/watch/`
+
+2. Seeding & Streaming :
+   Transmission télécharge le fichier dans un dossier temporaire `.incomplete`,
+   puis le déplace dans `completed`.
+   À cet endroit, Transmission continue de le partager (seeding illimité)
+   pendant que Jellyfin le lit et le diffuse immédiatement sur vos écrans !
+
+
+------------------------------------------------------------------------------
+5. COMMANDES ET SCRIPTS ESSENTIELS À CONNAÎTRE
+------------------------------------------------------------------------------
+
+- Diagnostic et Santé de votre serveur :
+    ./scripts/healthcheck.sh
+    (Affiche si les conteneurs fonctionnent et l'espace disque disponible).
+
+- Obtenir votre adresse réseau chiffrée Yggdrasil :
+    ./scripts/yggdrasil_info.sh
+    (Affiche votre IP IPv6 mesh pour synchroniser un autre serveur).
+
+- Réinitialiser la configuration sans perdre vos vidéos :
+    ./reset.sh
+    (Efface les réglages mais CONSERVE tous vos médias dans /torrents).
+
+- Désinstaller complètement Replica 44 :
+    ./uninstall.sh
+
+
+------------------------------------------------------------------------------
+6. FOIRE AUX QUESTIONS ET SÉCURITÉ
+------------------------------------------------------------------------------
+
+Q: Que faire si mon disque VPS approche des 80% de remplissage ?
+R: Le script healthcheck vous préviendra par une alerte. Vous pouvez supprimer
+   les vidéos que vous avez déjà visionnées pour libérer de la place.
+
+Q: Comment utiliser mon propre nom de domaine et certificat SSL ?
+R: Dans l'IDE VS Code, remplacez simplement les fichiers `replica44.crt` et
+   `replica44.key` situés dans `~/replica44-data-4000/config/gateway/certs/`.
+
+Q: Où sont stockés mes mots de passe générés ?
+R: Dans le fichier secret `.env` à la racine de votre projet.
+==============================================================================

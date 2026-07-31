@@ -1,0 +1,23 @@
+# Container Quadlet: Transmission
+# Moteur de téléchargement opéré "As a File" pré-configuré
+
+[Container]
+ContainerName=replica44-transmission-${REPLICA44_INSTANCE_ID}
+Image=lscr.io/linuxserver/transmission:latest
+Pod=replica44-pod-${REPLICA44_INSTANCE_ID}.pod
+
+# Secrets & Environment
+Environment=PUID=1000
+Environment=PGID=1000
+Environment=TZ=Etc/UTC
+Environment=USER=${TRANSMISSION_USER}
+Environment=PASS=${TRANSMISSION_PASSWORD}
+EnvironmentFile=%h/Musique/replica/.env
+
+# Mounts
+Volume=%h/replica44-data-${REPLICA44_INSTANCE_ID}/config/transmission:/config:Z
+Volume=${REPLICA44_MEDIA_DIR}/watch:/watch:Z
+Volume=${REPLICA44_MEDIA_DIR}/completed:/completed:Z
+
+[Install]
+WantedBy=default.target

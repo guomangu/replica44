@@ -1,0 +1,11 @@
+# Secrets and local configurations
+.env
+*.env.local
+
+# Local data directory (do not track media or workspace data)
+~/replica44-data/
+replica44-data/
+
+# OS specific files
+.DS_Store
+Thumbs.db

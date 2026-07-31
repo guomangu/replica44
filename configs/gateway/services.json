@@ -1,0 +1,27 @@
+{
+  "instance": "4000",
+  "services": [
+    {
+      "name": "Jellyfin",
+      "icon": "🎬",
+      "description": "Serveur Multimédia & Streaming",
+      "port": 4001,
+      "url": "http://localhost:4001"
+    },
+    {
+      "name": "Transmission",
+      "icon": "⚡",
+      "description": "Moteur de Téléchargement As-a-File",
+      "port": 4002,
+      "url": "http://localhost:4002"
+    },
+    {
+      "name": "Open VS Code",
+      "icon": "🛠️",
+      "description": "Centre de Contrôle & IDE Web",
+      "port": 4004,
+      "url": "http://localhost:4004"
+    }
+  ],
+  "custom_services": []
+}

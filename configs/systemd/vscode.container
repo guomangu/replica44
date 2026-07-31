@@ -1,0 +1,23 @@
+# Container Quadlet: Open VS Code Server
+# Centre de contrôle (IDE) avec droits réseau étendus
+
+[Container]
+ContainerName=replica44-vscode-${REPLICA44_INSTANCE_ID}
+Image=docker.io/codercom/code-server:latest
+Pod=replica44-pod-${REPLICA44_INSTANCE_ID}.pod
+
+# Droits réseau et gestion de socket Podman
+AddCapability=CAP_NET_ADMIN
+SecurityLabelDisable=true
+
+# Environment & Secrets
+Environment=PASSWORD=${VSCODE_PASSWORD}
+EnvironmentFile=%h/Musique/replica/.env
+
+# Mounts
+Volume=${REPLICA44_DATA_DIR}:/home/coder/replica44-data:Z
+Volume=${REPLICA44_INFRA_DIR}:/home/coder/project:Z
+Volume=/var/run/user/1000/podman/podman.sock:/var/run/docker.sock:Z
+
+[Install]
+WantedBy=default.target

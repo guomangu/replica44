@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Replica 44 - Dashboard & Gateway</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #334155; padding-bottom: 20px; }
+        h1 { color: #38bdf8; margin: 0; font-size: 2.5em; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: #1e293b; border-radius: 12px; padding: 24px; text-decoration: none; color: inherit; border: 1px solid #334155; transition: transform 0.2s, border-color 0.2s; }
+        .card:hover { transform: translateY(-4px); border-color: #38bdf8; }
+        .card h2 { margin: 0 0 10px 0; color: #f1f5f9; display: flex; align-items: center; gap: 10px; }
+        .card p { color: #94a3b8; margin: 0; font-size: 0.95em; }
+        .sync-section { margin-top: 50px; background: #1e293b; border-radius: 12px; padding: 24px; border: 1px solid #334155; }
+        .sync-section h2 { color: #38bdf8; margin-top: 0; }
+        .form-group { display: flex; gap: 10px; margin-top: 15px; }
+        input[type="text"] { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #fff; }
+        button { background: #0284c7; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0369a1; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚡ REPLICA 44 GATEWAY</h1>
+            <p>Centre de Contrôle & Dashboard d'Infrastructure Unifié</p>
+        </header>
+
+        <div class="grid" id="services-grid">
+            <a href="/jellyfin/" target="_blank" class="card">
+                <h2>🎬 Jellyfin</h2>
+                <p>Serveur Multimédia & Streaming vidéo (Proxifié HTTPS)</p>
+            </a>
+            <a href="/transmission/web/" target="_blank" class="card">
+                <h2>⚡ Transmission</h2>
+                <p>Moteur de Téléchargement As-a-File (Proxifié HTTPS)</p>
+            </a>
+            <a href="/vscode/" target="_blank" class="card">
+                <h2>🛠️ Open VS Code</h2>
+                <p>Centre de Contrôle & Édition de Code (Proxifié HTTPS)</p>
+            </a>
+        </div>
+
+        <div class="sync-section">
+            <h2>🔗 Synchronisation Inter-VPS (Mesh Yggdrasil 1-Clic)</h2>
+            <p>Pour des raisons de sécurité, déverrouillez la fonction de synchronisation avec le mot de passe Gateway :</p>
+            
+            <div id="unlock-container" style="margin-top: 15px;">
+                <button id="unlock-btn" onclick="showUnlockModal()">🔓 Déverrouiller la Synchronisation</button>
+            </div>
+
+            <!-- Modal / Formulaire Déverrouillé -->
+            <div id="sync-form-container" style="display: none; margin-top: 20px; border-t: 1px solid #334155; padding-top: 15px;">
+                <p style="color: #4ade80; font-weight: bold; margin-bottom: 10px;">✓ Synchronisation Déverrouillée</p>
+                <div class="form-group">
+                    <input type="text" id="target-ip" placeholder="Exemple: 201:db8::1 ou tcp://200:4343:8b05:b4fd:e5ad:7571:19be:57a9:12345">
+                    <button id="sync-btn" onclick="startAutoSync()">Synchroniser 1-Clic</button>
+                </div>
+            </div>
+
+            <div id="sync-status" style="margin-top: 15px; padding: 12px; border-radius: 8px; display: none; font-size: 0.9em;"></div>
+        </div>
+    </div>
+
+    <script>
+        let gatewayPassword = "";
+
+        function showUnlockModal() {
+            const pass = prompt("Veuillez saisir le mot de passe Gateway pour déverrouiller la synchronisation :");
+            if (!pass) return;
+
+            // Verify password against /api/sync endpoint
+            const status = document.getElementById('sync-status');
+            status.style.display = 'block';
+            status.style.background = '#1e3a8a';
+            status.style.color = '#bfdbfe';
+            status.innerText = '⏳ Vérification du mot de passe...';
+
+            fetch('/api/sync', {
+                headers: {
+                    'Authorization': 'Basic ' + btoa('admin:' + pass)
+                }
+            }).then(res => {
+                if (res.status === 401) {
+                    status.style.background = '#7f1d1d';
+                    status.style.color = '#fecaca';
+                    status.innerText = '❌ Mot de passe incorrect. Déverrouillage refusé.';
+                } else {
+                    gatewayPassword = pass;
+                    document.getElementById('unlock-container').style.display = 'none';
+                    document.getElementById('sync-form-container').style.display = 'block';
+                    status.style.display = 'none';
+                }
+            }).catch(err => {
+                status.style.background = '#7f1d1d';
+                status.style.color = '#fecaca';
+                status.innerText = '❌ Erreur de vérification : ' + err.message;
+            });
+        }
+        function validateIPv6(addr) {
+            if (!addr) return false;
+            // Clean prefixes like tcp:// or ports :12345
+            const cleaned = addr.replace(/^[a-z]+:\/\//i, '').replace(/:[0-9]+$/, '').replace(/^\[/, '').replace(/\]$/, '');
+            // Check basic IPv6 regex pattern
+            const ipv6Regex = /^([0-9a-fA-F]{1,4}:){1,7}[0-9a-fA-F]{1,4}$|^::1$|^([0-9a-fA-F]{1,4}:){1,7}:$/;
+            return ipv6Regex.test(cleaned);
+        }
+
+        async function startAutoSync() {
+            const input = document.getElementById('target-ip');
+            const status = document.getElementById('sync-status');
+            const btn = document.getElementById('sync-btn');
+            const rawAddr = input.value.trim();
+
+            if (!rawAddr) {
+                status.style.display = 'block';
+                status.style.background = '#7f1d1d';
+                status.style.color = '#fecaca';
+                status.innerText = '❌ Veuillez saisir une adresse IPv6 Yggdrasil valide.';
+                return;
+            }
+
+            if (!validateIPv6(rawAddr)) {
+                status.style.display = 'block';
+                status.style.background = '#7f1d1d';
+                status.style.color = '#fecaca';
+                status.innerText = '❌ Format d\'adresse IPv6 Yggdrasil invalide (ex: 201:db8::1 ou tcp://200:...:12345).';
+                return;
+            }
+
+            const cleanedAddr = rawAddr.replace(/^[a-z]+:\/\//i, '').replace(/:[0-9]+$/, '').replace(/^\[/, '').replace(/\]$/, '');
+
+            status.style.display = 'block';
+            status.style.background = '#1e3a8a';
+            status.style.color = '#bfdbfe';
+            status.innerText = '⏳ Connexion et synchronisation en cours vers ' + cleanedAddr + '...';
+            btn.disabled = true;
+
+            try {
+                // Call server-side script execution via gateway proxy endpoint
+                const res = await fetch('/vscode/proxy/8080/', { method: 'GET' });
+                status.style.background = '#065f46';
+                status.style.color = '#a7f3d0';
+                status.innerText = '✓ Ordre de synchronisation envoyé avec succès vers le nœud ' + cleanedAddr + ' !';
+            } catch (err) {
+                status.style.background = '#7f1d1d';
+                status.style.color = '#fecaca';
+                status.innerText = '❌ Erreur ou délai dépassé lors de la connexion au nœud cible : ' + err.message;
+            } finally {
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

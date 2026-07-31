@@ -1,0 +1,15 @@
+{
+    "download-dir": "/completed",
+    "incomplete-dir": "/completed/.incomplete",
+    "incomplete-dir-enabled": true,
+    "watch-dir": "/watch",
+    "watch-dir-enabled": true,
+    "rpc-enabled": true,
+    "rpc-port": 9091,
+    "rpc-url": "/transmission/",
+    "rpc-authentication-required": true,
+    "rpc-username": "replica",
+    "rpc-whitelist-enabled": false,
+    "ratio-limit-enabled": false,
+    "seed-queue-enabled": false
+}

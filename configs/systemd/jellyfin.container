@@ -1,0 +1,17 @@
+# Container Quadlet: Jellyfin
+# Serveur de diffusion média avec dossier lourd personnalisable
+
+[Container]
+ContainerName=replica44-jellyfin-${REPLICA44_INSTANCE_ID}
+Image=docker.io/jellyfin/jellyfin:latest
+Pod=replica44-pod-${REPLICA44_INSTANCE_ID}.pod
+
+# Environment
+EnvironmentFile=%h/Musique/replica/.env
+
+# Mounts (Configuration & Volume Médias personnalisé)
+Volume=%h/replica44-data-${REPLICA44_INSTANCE_ID}/config/jellyfin:/config:Z
+Volume=${REPLICA44_MEDIA_DIR}/completed:/media:ro,Z
+
+[Install]
+WantedBy=default.target

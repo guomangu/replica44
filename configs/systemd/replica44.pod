@@ -1,0 +1,12 @@
+[Pod]
+PodName=replica44-pod-${REPLICA44_INSTANCE_ID}
+Network=bridge
+
+# Exposition des ports dynamiques
+PublishPort=${GATEWAY_PORT}:${GATEWAY_PORT}
+PublishPort=${JELLYFIN_PORT}:${JELLYFIN_PORT}
+PublishPort=${TRANSMISSION_PORT}:${TRANSMISSION_PORT}
+PublishPort=${VSCODE_PORT}:${VSCODE_PORT}
+
+[Install]
+WantedBy=default.target
