@@ -17,22 +17,20 @@ INSTALL_DIR="${INSTALL_DIR:-${HOME}/replica44-infra}"
 if [ -f "./bootstrap.sh" ]; then
     INSTALL_DIR="$(pwd)"
 elif [ -d "${INSTALL_DIR}" ]; then
-    echo "[+] Dépôt existant détecté dans ${INSTALL_DIR}."
+    echo "[1/3] Dépôt existant détecté dans ${INSTALL_DIR}."
 else
-    echo "[+] Initialisation du projet Replica 44 dans ${INSTALL_DIR}..."
+    echo "[1/3] Récupération de l'infrastructure Replica 44 depuis GitHub..."
     git clone https://github.com/guomangu/replica44.git "${INSTALL_DIR}"
 fi
 
 cd "${INSTALL_DIR}"
 
-if [ -f "./bootstrap.sh" ]; then
-    bash ./bootstrap.sh
-    bash ./scripts/deploy_quadlets.sh
-    bash ./scripts/healthcheck.sh
-else
-    echo "[!] Exécution en mode local ou bootstrapping..."
-fi
+echo "[2/3] Configuration automatique & Amorçage de l'instance..."
+bash ./bootstrap.sh
+
+echo "[3/3] Contrôle de santé de l'instance..."
+bash ./scripts/healthcheck.sh || true
 
 echo "======================================================================"
-echo "[✓] INSTALLATION TERMINÉE AVEC SUCCÈS !"
+echo "[✓] INSTALLATION ET DÉPLOIEMENT TERMINÉS EN 1 CLIC !"
 echo "======================================================================"

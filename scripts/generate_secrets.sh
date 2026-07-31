@@ -31,7 +31,7 @@ if [ ! -f "${ENV_FILE}" ]; then
     sed -i "s|^YGGDRASIL_LISTEN_PORT=.*|YGGDRASIL_LISTEN_PORT=$(( BASE_PORT + 3 ))|" "${ENV_FILE}"
     sed -i "s|^VSCODE_PORT=.*|VSCODE_PORT=$(( BASE_PORT + 4 ))|" "${ENV_FILE}"
 else
-    echo "[i] Fichier .env existant détecté. Aucune modification apportée (protection anti-écrasement)."
+    echo "[i] Fichier .env existant conservé pour l'instance ${REPLICA44_INSTANCE_ID:-4000}."
 fi
 
 # GATEWAY_PASSWORD
