@@ -26,7 +26,7 @@
 
 ### Option A : Installateur One-Liner (VPS Vierge)
 ```bash
-curl -fsSL https://raw.githubusercontent.com/replica44/replica44-infra/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/guomangu/replica44/main/install.sh | bash
 ```
 
 ### Option B : Déploiement Manuel Local

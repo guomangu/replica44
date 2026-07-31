@@ -2,7 +2,7 @@
 # ==============================================================================
 # Script : install.sh
 # Rôle   : Installateur universel One-Liner VPS pour Replica 44
-# Usage  : curl -fsSL https://raw.githubusercontent.com/user/replica44/main/install.sh | bash
+# Usage  : curl -fsSL https://raw.githubusercontent.com/guomangu/replica44/main/install.sh | bash
 # Conforme à la Règle 1 (< 100 lignes)
 # ==============================================================================
 
@@ -18,7 +18,7 @@ elif [ -d "${INSTALL_DIR}" ]; then
     echo "[+] Dépôt existant détecté dans ${INSTALL_DIR}."
 else
     echo "[+] Initialisation du projet Replica 44 dans ${INSTALL_DIR}..."
-    mkdir -p "${INSTALL_DIR}"
+    git clone https://github.com/guomangu/replica44.git "${INSTALL_DIR}" 2>/dev/null || true
 fi
 
 cd "${INSTALL_DIR}"
